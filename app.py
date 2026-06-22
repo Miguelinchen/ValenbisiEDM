@@ -425,22 +425,11 @@ def build_map(
 # ---------------------------------------------------------------------------
 def build_forecast_chart(
     history_df: pd.DataFrame,
-    forecast_df: pd.DataFrame,
+    forecast_only: pd.DataFrame,
     station_name: str,
-    display_hours: int,
 ) -> go.Figure:
     history_cutoff = history_df["ds"].max() - pd.Timedelta(days=14)
     recent = history_df[history_df["ds"] >= history_cutoff]
-
-    # Slice future: use negative indexing (last N rows of forecast_df)
-    forecast_only = forecast_df.iloc[-display_hours:]
-
-    # Safety: ensure forecast starts exactly where history ends
-    if len(forecast_only) > 0 and len(recent) > 0:
-        forecast_first = forecast_only["ds"].min()
-        history_last = recent["ds"].max()
-        if forecast_first <= history_last:
-            forecast_only = forecast_only[forecast_only["ds"] > history_last]
 
     fig = go.Figure()
 
@@ -779,26 +768,30 @@ def main():
     # TAB 2 — Bayesian Forecast
     # ===================================================================
     with tab_forecast:
-        if next_hour_row is not None:
+        # ── Recompute from slider value RIGHT HERE (guaranteed fresh) ──
+        future_rows = forecast.iloc[-MAX_FORECAST_HOURS:]
+        fc_display = future_rows.head(forecast_hours)
+        fc_next = fc_display.iloc[0] if len(fc_display) > 0 else None
+
+        if fc_next is not None:
             st.info(
-                f"**Next hour forecast ({next_hour_row['ds'].strftime('%H:%M')}):** "
-                f"**{next_hour_row['yhat']:.1f}** bikes "
-                f"[95 % CI: {next_hour_row['yhat_lower']:.1f} – {next_hour_row['yhat_upper']:.1f}]"
+                f"**Next hour forecast ({fc_next['ds'].strftime('%H:%M')}):** "
+                f"**{fc_next['yhat']:.1f}** bikes "
+                f"[95 % CI: {fc_next['yhat_lower']:.1f} – {fc_next['yhat_upper']:.1f}]"
             )
 
-        fig = build_forecast_chart(station_df, forecast, station_info["name"], forecast_hours)
+        fig = build_forecast_chart(station_df, fc_display, station_info["name"])
         st.plotly_chart(fig, use_container_width=True)
 
         st.divider()
         st.caption("Forecast breakdown (next 6 hours)")
-        preview = forecast_only.head(6)[["ds", "yhat", "yhat_lower", "yhat_upper"]].copy()
+        preview = fc_display.head(6)[["ds", "yhat", "yhat_lower", "yhat_upper"]].copy()
         preview["ds"] = preview["ds"].dt.strftime("%a %d %b — %H:%M")
         preview.columns = ["Datetime", "Median", "Lower 95%", "Upper 95%"]
         preview["Uncertainty (±)"] = (
             (preview["Upper 95%"] - preview["Lower 95%"]) / 2
         ).round(1)
 
-        # Render as styled dataframe with dark background
         st.dataframe(
             preview.set_index("Datetime").style.format("{:.1f}"),
             use_container_width=True,
