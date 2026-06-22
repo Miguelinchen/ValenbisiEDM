@@ -1,0 +1,11 @@
+station_id,name,lat,lon,capacity,type
+1,Plaza del Ayuntamiento,39.4699,-0.3763,30,transport_hub
+2,Estación del Norte,39.467,-0.3816,40,transport_hub
+3,UV Tarongers,39.48,-0.356,35,university
+4,UPV Campus,39.4815,-0.345,40,university
+5,Ciudad de las Artes,39.4543,-0.3535,35,tourist
+6,Playa Malvarrosa,39.475,-0.33,30,tourist
+7,Ruzafa,39.462,-0.372,25,commercial
+8,Benimaclet,39.486,-0.363,25,residential
+9,Av. Francia,39.4625,-0.345,30,commercial
+10,Hospital La Fe,39.4438,-0.383,30,public_service
