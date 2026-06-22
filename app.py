@@ -686,7 +686,7 @@ def main():
             "**José Miguel García**  \n"
             "**Daniel Herrán Gomez-Senent**  \n\n"
             "*Universitat Politècnica de València*  \n"
-            "*EDM — Estructuras y Discretización de Modelos*"
+            "*EDM — Evaluación, Despliegue y Monitorización de Modelos*"
         )
 
     # ---- Load and prepare data ----
