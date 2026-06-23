@@ -673,7 +673,8 @@ def main():
         st.markdown("#### Developers")
         st.markdown(
             "**José Miguel García**  \n"
-            "**Daniel Herrán Gomez-Senent**  \n\n"
+            "**Daniel Herrán Gomez-Senent**  \n"
+            "**Batu Senyucel**  \n\n"
             "*Universitat Politècnica de València*  \n"
             "*EDM — Evaluación, Despliegue y Monitorización de Modelos*"
         )
